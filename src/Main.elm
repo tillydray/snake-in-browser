@@ -35,9 +35,9 @@ main =
 
 initModel : Model
 initModel =
-    { snake = [ ( 200, 200 ) ]
+    { snake = [ initialSnakePosition ]
     , direction = ( 0, 0 )
-    , food = ( 300, 300 )
+    , food = initialFoodPosition
     , growing = False
     }
 
@@ -53,17 +53,12 @@ keyDecoder key =
     Decode.succeed (ChangeDirection key)
 
 
-gridSize : Int
-gridSize =
-    20
-
-
 generateRandomPosition : Random.Generator ( Int, Int )
 generateRandomPosition =
     Random.map2
-        (\x y -> ( x, y ))
-        (Random.int 0 ((400 // gridSize) * gridSize - gridSize))
-        (Random.int 0 ((400 // gridSize) * gridSize - gridSize))
+        (\x y -> ( x * gridSize, y * gridSize ))
+        (Random.int 0 maxGridIndex)
+        (Random.int 0 maxGridIndex)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -161,14 +156,17 @@ moveSnake model =
 
 detectCollision : ( Int, Int ) -> Bool
 detectCollision ( x, y ) =
-    x < 0 || x >= 400 || y < 0 || y >= 400
+    x < 0 || x >= boardSize || y < 0 || y >= boardSize
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ svg
-            [ width "400", height "400", style "border" "2px solid black" ]
+            [ width (String.fromInt boardSize)
+            , height (String.fromInt boardSize)
+            , style "border" (String.concat [ String.fromInt borderSize, "px solid black" ])
+            ]
             (List.map snakePart model.snake ++ [ foodPart model.food ])
         ]
 
@@ -205,3 +203,33 @@ fst ( a, _ ) =
 snd : ( a, b ) -> b
 snd ( _, b ) =
     b
+
+
+gridSize : Int
+gridSize =
+    20
+
+
+boardSize : Int
+boardSize =
+    400
+
+
+borderSize : Int
+borderSize =
+    2
+
+
+maxGridIndex : Int
+maxGridIndex =
+    (boardSize // gridSize) - 1
+
+
+initialSnakePosition : ( Int, Int )
+initialSnakePosition =
+    ( boardSize // 2, boardSize // 2 )
+
+
+initialFoodPosition : ( Int, Int )
+initialFoodPosition =
+    ( (boardSize * 3) // 4, (boardSize * 3) // 4 )
