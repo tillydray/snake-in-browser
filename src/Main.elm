@@ -45,7 +45,9 @@ initModel =
 subscriptions : Sub Msg
 subscriptions =
     Sub.batch
-        [ onKeyDown (Decode.field "key" Decode.string |> Decode.andThen keyDecoder), Browser.Events.onAnimationFrameDelta (\_ -> Move) ]
+        [ onKeyDown (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+        , Browser.Events.onAnimationFrameDelta (\_ -> Move)
+        ]
 
 
 keyDecoder : String -> Decode.Decoder Msg
