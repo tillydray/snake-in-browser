@@ -8,6 +8,7 @@ import Json.Decode as Decode
 import Random
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (fill, height, width, x, y)
+import Time
 
 
 type alias Model =
@@ -46,7 +47,7 @@ subscriptions : Sub Msg
 subscriptions =
     Sub.batch
         [ onKeyDown (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
-        , Browser.Events.onAnimationFrameDelta (\_ -> Move)
+        , Time.every snakeSpeedInMilliseconds (\_ -> Move)
         ]
 
 
@@ -235,3 +236,8 @@ initialSnakePosition =
 initialFoodPosition : ( Int, Int )
 initialFoodPosition =
     ( (boardSize * 3) // 4, (boardSize * 3) // 4 )
+
+
+snakeSpeedInMilliseconds : Float
+snakeSpeedInMilliseconds =
+    200
