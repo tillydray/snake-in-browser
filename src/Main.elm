@@ -75,9 +75,14 @@ update msg model =
                 let
                     newModel =
                         moveSnake model
+
+                    headPosition =
+                        List.head newModel.snake |> Maybe.withDefault ( 0, 0 )
                 in
-                if model.growing then
-                    ( newModel, Random.generate PlaceFood generateRandomPosition )
+                if headPosition == model.food then
+                    ( { newModel | growing = True }
+                    , Random.generate PlaceFood generateRandomPosition
+                    )
 
                 else
                     ( newModel, Cmd.none )
@@ -136,7 +141,7 @@ update msg model =
                     ( model, Cmd.none )
 
         PlaceFood newPosition ->
-            ( { model | food = newPosition, growing = True }, Cmd.none )
+            ( { model | food = newPosition }, Cmd.none )
 
 
 moveSnake : Model -> Model
