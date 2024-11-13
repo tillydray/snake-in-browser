@@ -5,9 +5,11 @@ import Browser.Events exposing (onKeyDown)
 import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 import Json.Decode as Decode
+import Process
 import Random
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (fill, height, width, x, y)
+import Task
 import Time
 
 
@@ -16,6 +18,7 @@ type alias Model =
     , direction : ( Int, Int )
     , food : ( Int, Int )
     , growing : Bool
+    , snakeSpeedInMilliseconds : Float
     }
 
 
@@ -27,7 +30,7 @@ type Msg
 
 main =
     Browser.element
-        { init = \() -> ( initModel, Cmd.none )
+        { init = \() -> ( initModel, scheduleNextMove initModel.snakeSpeedInMilliseconds )
         , update = update
         , subscriptions = always subscriptions
         , view = view
@@ -40,6 +43,7 @@ initModel =
     , direction = ( 0, 0 )
     , food = initialFoodPosition
     , growing = False
+    , snakeSpeedInMilliseconds = initialSnakeSpeedInMilliseconds
     }
 
 
@@ -47,7 +51,6 @@ subscriptions : Sub Msg
 subscriptions =
     Sub.batch
         [ onKeyDown (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
-        , Time.every snakeSpeedInMilliseconds (\_ -> Move)
         ]
 
 
@@ -69,7 +72,7 @@ update msg model =
     case msg of
         Move ->
             if detectCollision (List.head model.snake |> Maybe.withDefault ( 0, 0 )) then
-                ( initModel, Cmd.none )
+                ( initModel, scheduleNextMove initModel.snakeSpeedInMilliseconds )
 
             else
                 let
@@ -78,14 +81,29 @@ update msg model =
 
                     headPosition =
                         List.head newModel.snake |> Maybe.withDefault ( 0, 0 )
-                in
-                if headPosition == model.food then
-                    ( { newModel | growing = True }
-                    , Random.generate PlaceFood generateRandomPosition
-                    )
 
-                else
-                    ( newModel, Cmd.none )
+                    ( updatedModel, cmd ) =
+                        if headPosition == model.food then
+                            let
+                                fasterSpeed =
+                                    newModel.snakeSpeedInMilliseconds * 0.9
+
+                                -- increase speed by 10%
+                            in
+                            ( { newModel
+                                | growing = True
+                                , snakeSpeedInMilliseconds = fasterSpeed
+                              }
+                            , Random.generate PlaceFood generateRandomPosition
+                            )
+
+                        else
+                            ( newModel, Cmd.none )
+
+                    nextMoveCmd =
+                        scheduleNextMove updatedModel.snakeSpeedInMilliseconds
+                in
+                ( updatedModel, Cmd.batch [ cmd, nextMoveCmd ] )
 
         ChangeDirection keyPressed ->
             case keyPressed of
@@ -213,6 +231,12 @@ snd ( _, b ) =
     b
 
 
+scheduleNextMove : Float -> Cmd Msg
+scheduleNextMove milliseconds =
+    Process.sleep milliseconds
+        |> Task.perform (\_ -> Move)
+
+
 gridSize : Int
 gridSize =
     20
@@ -243,6 +267,6 @@ initialFoodPosition =
     ( (boardSize * 3) // 4, (boardSize * 3) // 4 )
 
 
-snakeSpeedInMilliseconds : Float
-snakeSpeedInMilliseconds =
+initialSnakeSpeedInMilliseconds : Float
+initialSnakeSpeedInMilliseconds =
     200
