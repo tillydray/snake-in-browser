@@ -1,0 +1,5 @@
+#+title: Readme
+
+Creating the game of snake in the browser, using LLMs (so far just o1-preview)
+to produce the code. I'm using the lovely emacs package [[https://github.com/karthink/gptel][gptel]] to communicate
+with the LLM
