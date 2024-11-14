@@ -10,7 +10,6 @@ import Random
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (fill, height, width, x, y)
 import Task
-import Time
 
 
 type alias Model =
@@ -71,7 +70,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Move ->
-            if detectCollision (List.head model.snake |> Maybe.withDefault ( 0, 0 )) then
+            if detectCollision (List.head model.snake |> Maybe.withDefault ( 0, 0 )) model then
                 ( initModel, scheduleNextMove initModel.snakeSpeedInMilliseconds )
 
             else
@@ -180,9 +179,17 @@ moveSnake model =
     { model | snake = newSnake, growing = False }
 
 
-detectCollision : ( Int, Int ) -> Bool
-detectCollision ( x, y ) =
-    x < 0 || x >= boardSize || y < 0 || y >= boardSize
+detectCollision : ( Int, Int ) -> Model -> Bool
+detectCollision ( x, y ) model =
+    x
+        < 0
+        || x
+        >= boardSize
+        || y
+        < 0
+        || y
+        >= boardSize
+        || List.member ( x, y ) (List.tail model.snake |> Maybe.withDefault [])
 
 
 view : Model -> Html Msg
