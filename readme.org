@@ -1,5 +1,101 @@
-#+title: Readme
 
-Creating the game of snake in the browser, using LLMs (so far just o1-preview)
-to produce the code. I'm using the lovely emacs package [[https://github.com/karthink/gptel][gptel]] to communicate
-with the LLM
+#+title: Snake Game in Elm
+
+* Introduction
+
+This project is a simple implementation of the classic Snake game built using
+the Elm programming language. The game runs in a web browser and allows the
+player to control the snake using the arrow keys. The snake grows when it eats
+food, and the game ends when the snake collides with the walls or itself.
+
+The development process leveraged Large Language Models (LLMs) to generate and
+improve the code (and this readme file), using the Emacs package [[https://github.com/karthink/gptel][GPTel]] to
+interact with the LLMs.
+
+* Features
+
+- Classic Snake gameplay
+- Increasing snake speed as it grows
+- Randomly placed food
+- Collision detection with walls and self
+- Responsive keyboard controls
+
+* Getting Started
+
+** Prerequisites
+
+- [[https://guide.elm-lang.org/install/elm.html][Elm]] installed on your system.
+- A web browser to run the game.
+
+** Installation
+
+*** 1. Clone the repository
+
+#+begin_src bash
+git clone https://github.com/tillydray/snake-in-browser.git
+#+end_src
+
+*** 2. Navigate to the project directory
+
+#+begin_src bash
+cd snake-in-browser
+#+end_src
+
+*** 3. Compile the Elm code to JavaScript
+
+#+begin_src bash
+elm make src/Main.elm --output=main.js
+#+end_src
+
+** Usage
+
+1. Open =index.html= in your web browser.
+
+2. Control the snake using the arrow keys.
+
+3. Avoid collisions with the walls or the snake's own body.
+
+* Development Process
+
+The game was developed using Emacs with the [[https://github.com/karthink/gptel][GPTel]] package to interact with Large
+Language Models (LLMs). The development conversations are documented in the
+=*.org= files, capturing the iterative improvements made throughout the project.
+
+** Conversations and Documentation
+
+The =*.org= files in this repository document the development conversations with
+the LLMs. They serve as a detailed walkthrough of the coding process, decisions
+made, and challenges encountered. Reading these files can provide insights into
+using LLMs for coding assistance.
+
+** Code Structure
+
+- =src/Main.elm=: The core Elm source code for the game.
+- =main.js=: The compiled JavaScript output from the Elm code.
+- =index.html=: The HTML file that hosts the game.
+- =readme.org=: This README file.
+- =*.org=: Org files containing conversations and development notes.
+
+** Planned Features / Future Improvements
+
+- Multiplayer support with multiple snakes
+- Scoring system
+- Difficulty levels and game modes
+- Addition of barriers and special food items
+
+* Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any
+improvements or bug fixes.
+
+** Steps to Contribute
+
+1. Fork the repository.
+
+2. Create a new branch for your feature or bug fix.
+
+3. Commit your changes with descriptive messages.
+
+4. Push your branch to your forked repository.
+
+5. Open a pull request detailing your changes.
